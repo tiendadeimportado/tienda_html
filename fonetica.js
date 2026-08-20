@@ -9,7 +9,8 @@ const fileInput = document.querySelector("#workbookFile");
 const tokenInput = document.querySelector("#adminToken");
 const status = document.querySelector("#uploadStatus");
 
-download.href = `${apiBase}/api/fonetica/plantilla`;
+download.href = `${apiBase}/api/base/plantilla`;
+tokenInput.value = localStorage.getItem("tienda-operador-token") || "";
 
 upload.addEventListener("click", async () => {
   const file = fileInput.files?.[0];
@@ -30,17 +31,17 @@ upload.addEventListener("click", async () => {
   const form = new FormData();
   form.append("archivo", file);
   try {
-    const response = await fetch(`${apiBase}/api/fonetica/importar`, {
+    const response = await fetch(`${apiBase}/api/base/importar`, {
       method: "POST",
       headers: { "X-Admin-Token": token },
       body: form,
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || "No se pudo importar la planilla.");
-    status.textContent = `Listo: ${data.importadas} equivalencias importadas.`;
+    localStorage.setItem("tienda-operador-token", token);
+    status.textContent = `Listo: ${data.fragancias.leidas} fragancias, ${data.acciones} acciones y ${data.fonetica} equivalencias procesadas.`;
     status.dataset.state = "ok";
     fileInput.value = "";
-    tokenInput.value = "";
   } catch (error) {
     status.textContent = error.message;
     status.dataset.state = "error";
@@ -48,4 +49,3 @@ upload.addEventListener("click", async () => {
     upload.disabled = false;
   }
 });
-

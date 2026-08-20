@@ -3,80 +3,138 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#17202a" />
+    <meta name="theme-color" content="#19231f" />
     <meta name="api-base" content="https://tienda-importado-api.onrender.com" />
-    <title>Stock por voz</title>
+    <title>Inventario por voz · Tienda de Importado</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="shell">
-      <header class="brand">
-        <span class="brand-mark" aria-hidden="true">T</span>
-        <div>
-          <p class="eyebrow">TIENDA DE IMPORTADO</p>
-          <h1>Stock por voz</h1>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="index.html" aria-label="Inicio">
+          <span class="brand-mark" aria-hidden="true">T</span>
+          <span>
+            <small>TIENDA DE IMPORTADO</small>
+            <strong>Inventario por voz</strong>
+          </span>
+        </a>
+        <div class="top-actions">
+          <span id="accessBadge" class="access-badge" data-state="locked">Sin acceso</span>
+          <a class="plain-link" href="fonetica.html">Base de operación</a>
         </div>
-        <span class="read-only">Solo lectura</span>
       </header>
 
-      <section class="voice-panel" aria-labelledby="voice-title">
-        <div class="halo" id="halo">
-          <button id="micButton" class="mic-button" type="button" aria-label="Empezar a hablar">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Z" />
-              <path d="M18 11v1a6 6 0 0 1-12 0v-1M12 18v3M9 21h6" />
-            </svg>
-          </button>
-        </div>
-        <h2 id="voice-title">Decí el producto</h2>
-        <p id="statusText" class="status" aria-live="polite">
-          Tocá el micrófono y hablá como te salga.
-        </p>
-      </section>
-
-      <section id="candidates" class="candidates-card" hidden aria-live="polite">
-        <div class="candidates-heading">
-          <div>
-            <p class="eyebrow">ENCONTRÉ VARIAS OPCIONES</p>
-            <h2 id="candidatesTitle">Decime cuál es</h2>
-          </div>
-          <span id="candidateCount" class="candidate-count">0</span>
-        </div>
-        <p id="candidatesHint" class="candidates-hint">Te sigo escuchando.</p>
-        <p id="candidateQuantity" class="recognized-quantity" hidden></p>
-        <div id="candidateList" class="candidate-list"></div>
-        <button id="newSearchButton" class="new-search" type="button">Empezar otra búsqueda</button>
-      </section>
-
-      <section id="result" class="result-card" hidden aria-live="polite">
-        <div class="result-heading">
-          <div>
-            <p class="eyebrow" id="resultEyebrow">PRODUCTO RECONOCIDO</p>
-            <h2 id="productName">—</h2>
-          </div>
-          <span class="check" id="resultCheck" aria-hidden="true">✓</span>
-        </div>
-        <dl class="product-grid">
-          <div><dt>Marca</dt><dd id="brandValue">—</dd></div>
-          <div><dt>Modelo</dt><dd id="modelValue">—</dd></div>
-          <div><dt>Cantidad reconocida</dt><dd id="quantityValue">—</dd></div>
-          <div><dt>Stock actual</dt><dd id="stockValue">—</dd></div>
-          <div><dt>Precio</dt><dd id="priceValue">—</dd></div>
-        </dl>
-        <p id="heardText" class="heard"></p>
-        <p class="safe-note">Prueba visual: el stock no fue modificado.</p>
-      </section>
-
-      <section id="emptyResult" class="empty-card" hidden aria-live="polite">
-        <span aria-hidden="true">?</span>
+      <section id="accessPanel" class="access-panel" aria-labelledby="accessTitle">
         <div>
-          <h2>No encontré un producto seguro</h2>
-          <p id="emptyText">Probá describirlo de otra manera.</p>
+          <p class="eyebrow">ACCESO DEL EQUIPO</p>
+          <h1 id="accessTitle">Ingresá la clave operativa</h1>
+          <p>Se guarda únicamente en este navegador.</p>
         </div>
+        <div class="access-controls">
+          <label class="sr-only" for="operatorToken">Clave operativa</label>
+          <input id="operatorToken" type="password" autocomplete="current-password" placeholder="Clave operativa" />
+          <button id="saveAccess" class="button button-dark" type="button">Entrar</button>
+        </div>
+        <p id="accessStatus" class="inline-status" aria-live="polite"></p>
       </section>
-      <footer class="app-footer">
-        <a href="fonetica.html">Administrar base fonética</a>
-      </footer>
+
+      <section id="workspace" class="workspace" hidden>
+        <section class="card voice-card" aria-labelledby="voiceTitle">
+          <div class="card-heading">
+            <div>
+              <p class="eyebrow">CONTROL POR VOZ</p>
+              <h2 id="voiceTitle">Decime qué hacemos</h2>
+            </div>
+            <span id="voiceState" class="state-dot">Listo</span>
+          </div>
+
+          <div id="halo" class="halo">
+            <button id="micButton" class="mic-button" type="button" aria-label="Empezar a hablar">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Z" />
+                <path d="M18 11v1a6 6 0 0 1-12 0v-1M12 18v3M9 21h6" />
+              </svg>
+            </button>
+          </div>
+          <p id="statusText" class="status" aria-live="polite">Tocá el micrófono y hablá como te salga.</p>
+          <button id="newSearchButton" class="button button-quiet" type="button">Nueva operación</button>
+        </section>
+
+        <div class="center-stack">
+          <section id="operation" class="card operation-card" aria-live="polite">
+            <div id="operationEmpty" class="empty-state">
+              <span aria-hidden="true">→</span>
+              <div>
+                <p class="eyebrow">OPERACIÓN ACTUAL</p>
+                <h2>Esperando indicaciones</h2>
+                <p>Podés decir todo junto o completar producto, cantidad y acción de a partes.</p>
+              </div>
+            </div>
+
+            <div id="operationContent" hidden>
+              <div class="card-heading operation-heading">
+                <div>
+                  <p id="operationEyebrow" class="eyebrow">OPERACIÓN ACTUAL</p>
+                  <h2 id="productName">—</h2>
+                </div>
+                <span id="operationSign" class="operation-sign">…</span>
+              </div>
+              <div class="operation-grid">
+                <div><span>Acción</span><strong id="actionValue">—</strong></div>
+                <div><span>Cantidad</span><strong id="quantityValue">—</strong></div>
+                <div><span>Stock actual</span><strong id="stockValue">—</strong></div>
+                <div><span>Stock resultante</span><strong id="projectedValue">—</strong></div>
+                <div class="wide"><span>Precio</span><strong id="priceValue">—</strong></div>
+              </div>
+              <p id="confirmationCue" class="confirmation-cue" hidden>Decí <strong>“confirmo”</strong> para guardar el movimiento.</p>
+              <p id="heardText" class="heard"></p>
+            </div>
+          </section>
+
+          <section id="candidates" class="card candidates-card" hidden aria-live="polite">
+            <div class="card-heading">
+              <div>
+                <p class="eyebrow">ENCONTRÉ VARIAS OPCIONES</p>
+                <h2 id="candidatesTitle">Decime cuál es</h2>
+              </div>
+              <span id="candidateCount" class="count-badge">0</span>
+            </div>
+            <p id="candidatesHint" class="section-hint">Te sigo escuchando.</p>
+            <div id="candidateList" class="line-list"></div>
+          </section>
+
+          <section id="stockResults" class="card stock-card" hidden aria-live="polite">
+            <div class="card-heading">
+              <div>
+                <p class="eyebrow">CONSULTA DE STOCK</p>
+                <h2 id="stockResultsTitle">Stock</h2>
+              </div>
+              <span id="stockResultsCount" class="count-badge">0</span>
+            </div>
+            <div id="stockResultsList" class="line-list stock-list"></div>
+          </section>
+
+          <section id="errorCard" class="card error-card" hidden aria-live="polite">
+            <span aria-hidden="true">!</span>
+            <div>
+              <h2>No pude cerrar la solicitud</h2>
+              <p id="errorText">Probá decirlo de otra manera.</p>
+            </div>
+          </section>
+        </div>
+
+        <section class="card movements-card" aria-labelledby="movementsTitle">
+          <div class="card-heading">
+            <div>
+              <p class="eyebrow">ÚLTIMOS 10</p>
+              <h2 id="movementsTitle">Movimientos de stock</h2>
+            </div>
+          </div>
+          <div id="movementList" class="movement-list">
+            <p class="muted-line">Todavía no hay movimientos.</p>
+          </div>
+        </section>
+      </section>
     </main>
     <script src="app.js" defer></script>
   </body>

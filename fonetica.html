@@ -3,44 +3,42 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#17202a" />
+    <meta name="theme-color" content="#19231f" />
     <meta name="api-base" content="https://tienda-importado-api.onrender.com" />
-    <title>Base fonética · Tienda de Importado</title>
+    <title>Base de operación · Tienda de Importado</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="shell phonetic-shell">
-      <header class="brand">
-        <span class="brand-mark" aria-hidden="true">T</span>
-        <div>
-          <p class="eyebrow">TIENDA DE IMPORTADO</p>
-          <h1>Base fonética</h1>
-        </div>
-        <a class="back-link" href="index.html">Volver</a>
+    <main class="phonetic-shell">
+      <header class="topbar">
+        <a class="brand" href="index.html">
+          <span class="brand-mark" aria-hidden="true">T</span>
+          <span><small>TIENDA DE IMPORTADO</small><strong>Base de operación</strong></span>
+        </a>
+        <a class="plain-link" href="index.html">Volver al inventario</a>
       </header>
 
-      <section class="phonetic-card">
-        <p class="eyebrow">PASO 1</p>
-        <h2>Bajá el Excel</h2>
-        <p>Incluye ejemplos, listas desplegables e instrucciones. Completalo sin cambiar los títulos de las columnas.</p>
-        <a id="downloadWorkbook" class="primary-action" href="#">Descargar Excel de fonética</a>
+      <section class="card phonetic-card">
+        <p class="eyebrow">DESCARGAR</p>
+        <h2>Excel completo</h2>
+        <p>Incluye tres solapas: <strong>Fragancias</strong>, <strong>Acciones</strong> y <strong>Fonética</strong>. Podés actualizar stock, precios, frases y pronunciaciones desde un solo archivo.</p>
+        <a id="downloadWorkbook" class="primary-action" href="#">Descargar base de operación</a>
       </section>
 
-      <section class="phonetic-card">
-        <p class="eyebrow">PASO 2</p>
-        <h2>Subí el Excel actualizado</h2>
-        <p>Las filas existentes se actualizan y las nuevas se agregan. No borra equivalencias que no estén en el archivo.</p>
-        <label class="field-label" for="adminToken">Clave de administración</label>
-        <input id="adminToken" class="text-field" type="password" autocomplete="off" />
+      <section class="card phonetic-card">
+        <p class="eyebrow">IMPORTAR</p>
+        <h2>Subir cambios</h2>
+        <p>Los cambios de stock hechos desde el Excel quedan registrados como movimientos. Las filas nuevas crean productos y las existentes se actualizan por ID.</p>
+        <label class="field-label" for="adminToken">Clave operativa</label>
+        <input id="adminToken" class="text-field" type="password" autocomplete="current-password" />
         <label class="file-field" for="workbookFile">
           <span>Elegir archivo .xlsx</span>
           <input id="workbookFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
         </label>
-        <button id="uploadWorkbook" class="primary-action" type="button">Subir equivalencias</button>
+        <button id="uploadWorkbook" class="primary-action" type="button">Validar e importar</button>
         <p id="uploadStatus" class="upload-status" aria-live="polite"></p>
       </section>
     </main>
     <script src="fonetica.js" defer></script>
   </body>
 </html>
-
