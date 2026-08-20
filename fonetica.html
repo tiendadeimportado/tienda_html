@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es-AR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#17202a" />
+    <meta name="api-base" content="https://tienda-importado-api.onrender.com" />
+    <title>Base fonética · Tienda de Importado</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell phonetic-shell">
+      <header class="brand">
+        <span class="brand-mark" aria-hidden="true">T</span>
+        <div>
+          <p class="eyebrow">TIENDA DE IMPORTADO</p>
+          <h1>Base fonética</h1>
+        </div>
+        <a class="back-link" href="index.html">Volver</a>
+      </header>
+
+      <section class="phonetic-card">
+        <p class="eyebrow">PASO 1</p>
+        <h2>Bajá el Excel</h2>
+        <p>Incluye ejemplos, listas desplegables e instrucciones. Completalo sin cambiar los títulos de las columnas.</p>
+        <a id="downloadWorkbook" class="primary-action" href="#">Descargar Excel de fonética</a>
+      </section>
+
+      <section class="phonetic-card">
+        <p class="eyebrow">PASO 2</p>
+        <h2>Subí el Excel actualizado</h2>
+        <p>Las filas existentes se actualizan y las nuevas se agregan. No borra equivalencias que no estén en el archivo.</p>
+        <label class="field-label" for="adminToken">Clave de administración</label>
+        <input id="adminToken" class="text-field" type="password" autocomplete="off" />
+        <label class="file-field" for="workbookFile">
+          <span>Elegir archivo .xlsx</span>
+          <input id="workbookFile" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+        </label>
+        <button id="uploadWorkbook" class="primary-action" type="button">Subir equivalencias</button>
+        <p id="uploadStatus" class="upload-status" aria-live="polite"></p>
+      </section>
+    </main>
+    <script src="fonetica.js" defer></script>
+  </body>
+</html>
+
