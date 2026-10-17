@@ -10,7 +10,22 @@
   <link rel="stylesheet" href="./css/pages.css" />
 </head>
 <body>
-  <div class="app-shell">
+  <section class="auth-gate" id="authGate">
+    <form class="login-card" id="loginForm">
+      <div class="brand-mark login-mark">TI</div>
+      <div>
+        <div class="module-kicker">GESTIÓN INTERNA</div>
+        <h1>Tienda de Importado</h1>
+        <p>Ingresá con tu usuario o con la clave operativa de administración.</p>
+      </div>
+      <label>Usuario<input name="username" value="Maru" autocomplete="username" required /></label>
+      <label>Contraseña<input name="password" type="password" autocomplete="current-password" required /></label>
+      <button class="button button-primary" type="submit">Ingresar</button>
+      <p class="form-error" id="loginError"></p>
+    </form>
+  </section>
+
+  <div class="app-shell is-hidden" id="appShell">
     <aside class="sidebar" id="sidebar">
       <div class="brand-block">
         <div class="brand-mark">TI</div>
@@ -24,12 +39,13 @@
 
       <div class="sidebar-footer">
         <div class="user-mini">
-          <div class="avatar">M</div>
+          <div class="avatar" id="userAvatar">M</div>
           <div>
-            <strong>Maru</strong>
-            <span>Admin</span>
+            <strong id="userName">—</strong>
+            <span id="userRole">—</span>
           </div>
         </div>
+        <button class="logout-button" id="logoutButton" type="button">Cerrar sesión</button>
       </div>
     </aside>
 
@@ -41,8 +57,7 @@
           <h1 id="pageTitle">Dashboard</h1>
         </div>
         <div class="topbar-actions">
-          <button class="button button-ghost" type="button">Ayuda</button>
-          <button class="icon-button" type="button" aria-label="Notificaciones">○</button>
+          <span class="connection-state" id="connectionState">Conectando…</span>
         </div>
       </header>
 
@@ -54,6 +69,8 @@
   </div>
 
   <div class="mobile-backdrop" id="mobileBackdrop"></div>
+  <dialog class="app-dialog" id="appDialog"></dialog>
+  <div class="toast" id="toast" role="status"></div>
 
   <script type="module" src="./js/app.js"></script>
 </body>

@@ -1,4 +1,16 @@
-export function renderClientes() {
-  return `<div class="page-header"><div><div class="module-kicker">CLIENTES</div><h2>Clientes</h2><p>Direcciones, teléfonos, comercio, observaciones y saldo.</p></div><button class="button button-primary">+ Cliente</button></div>
-  <section class="card empty-state"><div class="empty-state-inner"><div class="empty-state-icon">◎</div><h2>Chau cuadernitos</h2><p>Acá va a quedar centralizada la ficha de cada cliente y su historial.</p></div></section>`;
+import { get, post, put } from "../api.js";
+import { hasPermission } from "../state.js";
+import { escapeHtml, formValue, money, notify, openDialog } from "../ui.js";
+const refresh = () => window.dispatchEvent(new HashChangeEvent("hashchange"));
+
+function form(client={}) { return `<form class="dialog-form"><div class="dialog-header"><h2>${client.id ? "Editar" : "Nuevo"} cliente</h2><button type="button" class="icon-button" data-close>×</button></div><div class="form-grid"><label>Nombre<input name="name" value="${escapeHtml(client.name||"")}" required></label><label>Comercio<input name="business_name" value="${escapeHtml(client.business_name||"")}"></label><label>Teléfono<input name="phone" value="${escapeHtml(client.phone||"")}"></label><label>Dirección<input name="address" value="${escapeHtml(client.address||"")}"></label><label class="wide">Observaciones<textarea name="notes">${escapeHtml(client.notes||"")}</textarea></label></div><div class="dialog-actions"><button type="button" class="button button-ghost" data-close>Cancelar</button><button type="submit" class="button button-primary">Guardar</button></div></form>`; }
+function payload(data){ return {name:formValue(data,"name"),business_name:formValue(data,"business_name")||null,phone:formValue(data,"phone")||null,address:formValue(data,"address")||null,notes:formValue(data,"notes")||null,active:true}; }
+
+export async function renderClientes() {
+  const {items}=await get("/api/v1/clients");
+  return {html:`<div class="page-header"><div><div class="module-kicker">CLIENTES</div><h2>Clientes</h2><p>Ficha, contacto, historial y saldo.</p></div>${hasPermission("clients.create")?`<button class="button button-primary" id="newClient">+ Cliente</button>`:""}</div><section class="card"><div class="toolbar"><label>Buscar<input id="clientSearch" placeholder="Nombre, comercio o teléfono"></label></div><div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Comercio</th><th>Teléfono</th><th>Dirección</th><th>Saldo</th><th></th></tr></thead><tbody>${items.map(c=>`<tr data-search="${escapeHtml(`${c.name} ${c.business_name||""} ${c.phone||""}`.toLowerCase())}"><td><strong>${escapeHtml(c.name)}</strong></td><td>${escapeHtml(c.business_name||"—")}</td><td>${escapeHtml(c.phone||"—")}</td><td>${escapeHtml(c.address||"—")}</td><td>${money(c.balance)}</td><td>${hasPermission("clients.modify")?`<button class="button button-ghost button-small" data-edit="${c.id}">Editar</button>`:""}</td></tr>`).join("")||`<tr><td colspan="6">Sin clientes todavía.</td></tr>`}</tbody></table></div></section>`,mount(){
+    document.getElementById("clientSearch").addEventListener("input",e=>document.querySelectorAll("tbody tr[data-search]").forEach(row=>row.hidden=!row.dataset.search.includes(e.target.value.toLowerCase())));
+    document.getElementById("newClient")?.addEventListener("click",()=>openDialog(form(),async data=>{await post("/api/v1/clients",payload(data));notify("Cliente creado.");refresh();}));
+    document.querySelectorAll("[data-edit]").forEach(button=>button.addEventListener("click",()=>{const client=items.find(c=>String(c.id)===button.dataset.edit);openDialog(form(client),async data=>{await put(`/api/v1/clients/${client.id}`,payload(data));notify("Cliente actualizado.");refresh();});}));
+  }};
 }
