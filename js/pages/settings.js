@@ -1,4 +1,4 @@
-import { get, patch, post } from "../api.js";
+import { get, patch, post, put } from "../api.js";
 import { hasPermission } from "../state.js";
 import { dateTime, escapeHtml, formValue, notify, openDialog, statusBadge } from "../ui.js";
 
@@ -35,9 +35,10 @@ export async function renderConfiguracion() {
   ]);
   const canManage = hasPermission("settings.manage");
   const roles = roleData.roles;
+  const correoConfig = correo.config || {};
   return { html:`<div class="page-header"><div><div class="module-kicker">CONFIGURACIÓN</div><h2>Configuración</h2><p>Usuarios, roles, permisos y servicios preparados.</p></div>${canManage ? `<button class="button button-primary" id="newUser">+ Usuario</button>` : ""}</div>
   <section class="card"><div class="card-pad"><h2>Usuarios internos</h2><p>El rol es una plantilla; las excepciones son individuales y se controlan también en el servidor.</p></div><div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th>Estado</th><th>Actualizado</th><th></th></tr></thead><tbody>${items.map(user => `<tr><td><strong>${escapeHtml(user.display_name)}</strong></td><td>${escapeHtml(user.username)}</td><td>${escapeHtml(user.role)}</td><td>${statusBadge(user.active ? "ACTIVE" : "INACTIVE")}</td><td>${dateTime(user.updated_at)}</td><td>${canManage ? `<button class="button button-ghost button-small" data-user="${user.id}">Editar</button>` : ""}</td></tr>`).join("") || `<tr><td colspan="6">No hay usuarios internos. Podés ingresar como Admin usando el token actual.</td></tr>`}</tbody></table></div></section>
-  <div class="grid grid-2 section-card"><section class="card card-pad"><h2>Plantillas de roles</h2>${Object.entries(roles).map(([role, permissions]) => `<details><summary><strong>${escapeHtml(role)}</strong> · ${role === "Admin" ? "acceso total" : `${permissions.length} permisos`}</summary><p>${role === "Admin" ? "Admin no admite restricciones." : permissions.map(p => escapeHtml(labels[p] || p)).join(" · ")}</p></details>`).join("")}</section><section class="card card-pad"><h2>Correo Argentino</h2><p>${escapeHtml(correo.message)}</p><p><strong>Estado:</strong> pendiente de credenciales y definición de API. No realiza envíos ni genera etiquetas.</p></section></div>`, mount(){
+  <div class="grid grid-2 section-card"><section class="card card-pad"><h2>Plantillas de roles</h2>${Object.entries(roles).map(([role, permissions]) => `<details><summary><strong>${escapeHtml(role)}</strong> · ${role === "Admin" ? "acceso total" : `${permissions.length} permisos`}</summary><p>${role === "Admin" ? "Admin no admite restricciones." : permissions.map(p => escapeHtml(labels[p] || p)).join(" · ")}</p></details>`).join("")}</section><section class="card card-pad"><h2>Correo Argentino</h2><p>${escapeHtml(correo.message)}</p><form id="correoSettings" class="dialog-form"><label>Número de cliente MiCorreo<input name="customer_number" value="${escapeHtml(correoConfig.customer_number || "")}" placeholder="Ej.: 123456" ${canManage ? "" : "disabled"}></label><label>Redondear importe del envío<select name="shipping_rounding_step" ${canManage ? "" : "disabled"}><option value="0" ${Number(correoConfig.shipping_rounding_step || 0) === 0 ? "selected" : ""}>Sin redondeo</option>${[100,500,1000,5000].map(step => `<option value="${step}" ${Number(correoConfig.shipping_rounding_step) === step ? "selected" : ""}>De $${step.toLocaleString("es-AR")} en $${step.toLocaleString("es-AR")}</option>`).join("")}</select></label>${canManage ? `<button class="button button-primary" type="submit">Guardar configuración</button>` : ""}<p class="small">Se guarda en AWS. La regla se aplicará a las cotizaciones cuando se active la integración; no modifica precios ni stock actuales.</p></form></section></div>`, mount(){
     document.getElementById("newUser")?.addEventListener("click", () => openDialog(userForm(roleData.permissions), async data => {
       await post("/api/v1/users", { username:formValue(data,"username"), display_name:formValue(data,"display_name"), password:data.get("password"), role:data.get("role"), active:data.has("active"), permission_overrides:overridesFrom(data, roleData.permissions) });
       notify("Usuario creado."); refresh();
@@ -50,5 +51,14 @@ export async function renderConfiguracion() {
         await patch(`/api/v1/users/${user.id}`, payload); notify("Usuario actualizado."); refresh();
       });
     }));
+    document.getElementById("correoSettings")?.addEventListener("submit", async event => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      await put("/api/v1/settings/correo-argentino", {
+        customer_number: formValue(data, "customer_number") || null,
+        shipping_rounding_step: Number(data.get("shipping_rounding_step") || 0),
+      });
+      notify("Configuración de Correo Argentino guardada."); refresh();
+    });
   }};
 }
