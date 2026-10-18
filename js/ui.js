@@ -4,7 +4,7 @@ const toast = document.getElementById("toast");
 export const escapeHtml = value => String(value ?? "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c]));
 export const money = value => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 2 }).format(Number(value || 0));
 export const dateTime = value => value ? new Date(value).toLocaleString("es-AR") : "—";
-export const statusBadge = status => `<span class="badge ${status === "PAGADO" || status === "ACTIVE" ? "badge-success" : status === "VOID" ? "badge-danger" : "badge-warning"}">${escapeHtml(status)}</span>`;
+export const statusBadge = status => `<span class="badge ${status === "PAGADO" || status === "ACTIVE" || status === "VENTA" ? "badge-success" : status === "VOID" || status === "ANULADA" ? "badge-danger" : "badge-warning"}">${escapeHtml(status)}</span>`;
 
 export function notify(message, error = false) {
   toast.textContent = message;
