@@ -11,7 +11,7 @@
 .button-primary {
   color: white;
   background: var(--primary);
-  box-shadow: 0 8px 20px rgba(101,87,201,.22);
+  box-shadow: 0 8px 20px rgba(194,24,91,.18);
 }
 
 .button-primary:hover { background: var(--primary-strong); }
